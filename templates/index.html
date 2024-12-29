@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Cherry Search Engine</title>
+{% endblock %}
+
+{% block body %}
+<h1>Cherry Search Engine</h1>
+<p>Total Entries: {{ total_entries }}</p>
+
+<form action="/search" method="get">
+    <input type="text" name="q" placeholder="Search...">
+    <button type="submit">Search</button>
+</form>
+
+<h1>Web Scraper</h1>
+<button id="start-scraping">Start Scraping</button>
+<div id="results"></div>
+
+<ul>
+    <li><a href="{{ url_for('search_api.display_database') }}">View Database</a></li>
+    <li><a href="{{ url_for('search_api.list_domains') }}">View Unique Domains</a></li>
+</ul>
+<script>
+    document.getElementById('start-scraping').addEventListener('click', function () {
+        fetch('/start-scraping')
+            .then(response => response.json())
+            .then(data => {
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.innerHTML = '';
+                data.forEach(url => {
+                    const p = document.createElement('p');
+                    p.textContent = url;
+                    resultsDiv.appendChild(p);
+                });
+            });
+    });
+</script>
+
+{% endblock %}

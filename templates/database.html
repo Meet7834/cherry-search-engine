@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Database View</title>
+{% endblock %}
+
+{% block body %}
+<div class="top-navbar">
+    <div>
+        {% if prev_url %}
+        <a class="prev-button" href="{{ prev_url }}">&larr;</a>
+        {% else %}
+        <div class="arrow-placeholder"></div>
+        {% endif %}
+
+        <span class="main-heading">Database Contents</span>
+
+        {% if next_url %}
+        <a class="next-button" href="{{ next_url }}">&rarr;</a>
+        {% else %}
+        <div class="arrow-placeholder"></div>
+        {% endif %}
+    </div>
+</div>
+
+<a href="/" class="button">Home</a>
+<p>Total Entries: {{ total_entries }}</p>
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>URL</th>
+        <th>Title</th>
+        <th>Content</th>
+    </tr>
+    {% for result in results %}
+    <tr>
+        <td>{{ result['id'] }}</td>
+        <td>
+            <a href="{{ url_for('search_api.display_document', doc_id=result['id']) }}" class="no-underline">{{ result['url'][:50] }}</a>
+            {% if result['url']|length > 50 %}
+            <span class="full-url" style="display:none;">{{ result['url'] }}</span>
+            <a href="javascript:void(0);" class="expand-url">Expand</a>
+            {% endif %}
+        </td>
+        <td>{{ result['title'] }}</td>
+        <td>
+            <span class="content">{{ result['content'][:200] }}</span>
+            {% if result['content']|length > 200 %}
+            <span class="more-content" style="display:none;">{{ result['content'][200:] }}</span>
+            <a href="javascript:void(0);" class="read-more">Read More</a>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<script>
+    document.querySelectorAll('.read-more').forEach(function (element) {
+        element.addEventListener('click', function () {
+            const moreContent = this.previousElementSibling;
+            const content = moreContent.previousElementSibling;
+            if (moreContent.style.display === 'none') {
+                moreContent.style.display = 'inline';
+                this.textContent = 'Read Less';
+            } else {
+                moreContent.style.display = 'none';
+                this.textContent = 'Read More';
+            }
+        });
+    });
+
+    document.querySelectorAll('.expand-url').forEach(function (element) {
+        element.addEventListener('click', function () {
+            const fullUrl = this.previousElementSibling;
+            const shortUrl = fullUrl.previousElementSibling;
+            if (fullUrl.style.display === 'none') {
+                fullUrl.style.display = 'inline';
+                shortUrl.style.display = 'none';
+                this.textContent = 'Collapse';
+            } else {
+                fullUrl.style.display = 'none';
+                shortUrl.style.display = 'inline';
+                this.textContent = 'Expand';
+            }
+        });
+    });
+</script>
+
+{% endblock %}
